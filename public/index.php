@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 use App\{Util, Database, Storage, Cache};
 
-require __DIR__ . '/../bootstrap.php';
+require __DIR__ . '/bootstrap.php';
 
 $alerts = [];
 $errors = [];
