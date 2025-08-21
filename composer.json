@@ -1,0 +1,16 @@
+{
+"name": "yourname/deplo-php-image-app",
+"description": "PHP App für Image Uploads nach Nine S3, mit DB-Register & Redis-Cache (deplo.io)",
+"type": "project",
+"require": {
+"php": ">=8.1",
+"ext-json": "*",
+"aws/aws-sdk-php": "^3.300",
+"predis/predis": "^2.2"
+},
+"autoload": {
+"psr-4": {
+"App\\": "src/"
+}
+}
+}
