@@ -1,0 +1,17 @@
+:root { --maxw: 960px; }
+* { box-sizing: border-box; }
+body { font-family: system-ui, sans-serif; margin: 2rem; }
+.container { max-width: var(--maxw); margin: 0 auto; }
+header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.logo { font-weight: 700; }
+.messages { padding: .75rem 1rem; background: #eef9f1; border: 1px solid #bfe7cb; border-radius: .5rem; margin: 1rem 0; }
+.error { background: #ffecec; border-color: #ffb3b3; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem; }
+.card { border: 1px solid #ddd; border-radius: .5rem; padding: .75rem; }
+.card img { max-width: 100%; height: auto; display: block; border-radius: .25rem; }
+small { color: #666; }
+form.delete { margin-top: .5rem; }
+button, input[type="submit"] { padding: .5rem .75rem; border-radius: .375rem; border: 1px solid #ccc; background: #f8f8f8; cursor: pointer; }
+input[type="file"] { padding: .5rem; }
+label { font-weight: 600; }
+footer { margin-top: 2rem; color: #777; font-size: .9rem; }
