@@ -2,7 +2,6 @@
 namespace App;
 
 use Predis\Client as Predis;
-use Predis\Response\Status;
 
 class Cache
 {
@@ -11,34 +10,53 @@ class Cache
 
     public function __construct()
     {
-        // 1) URL first (z.B. rediss://:pass@host:6380/0)
         $url = Util::env('REDIS_URL');
+        if (!$url) return;
 
-        // 2) Oder Einzelwerte
-        $host = Util::env('REDIS_HOST');
-        $opts = null;
+        try {
+            $params = $url;
 
-        if ($url) {
-            $opts = $url;
-        } elseif ($host) {
-            $opts = [
-                'scheme'   => Util::boolEnv('REDIS_TLS', false) ? 'tls' : 'tcp',
-                'host'     => $host,
-                'port'     => (int) Util::env('REDIS_PORT', 6379),
-                'password' => Util::env('REDIS_PASSWORD') ?: null,
-                'database' => (int) Util::env('REDIS_DB', 0),
-            ];
-        }
+            // Wenn CA-PEM vorhanden: URL in Array-Parameter umwandeln und TLS-Optionen setzen
+            $caPem = Util::env('REDIS_CA_PEM');
+            if ($caPem) {
+                $u = parse_url($url);
+                if ($u === false || !isset($u['scheme'], $u['host'])) {
+                    throw new \InvalidArgumentException('Ungültige REDIS_URL');
+                }
 
-        if ($opts) {
-            try {
-                $this->redis = new Predis($opts);
-                $pong = $this->redis->ping();
-                $this->lastStatus = ($pong instanceof Status) ? (string) $pong : (string) $pong; // "PONG"
-            } catch (\Throwable $e) {
-                $this->redis = null;
-                $this->lastStatus = 'error: ' . $e->getMessage();
+                $isTls = in_array(strtolower($u['scheme']), ['rediss','tls'], true);
+                $host  = $u['host'];
+                $port  = $u['port'] ?? 6379;
+                $pass  = $u['pass'] ?? null;
+                $db    = isset($u['path']) ? (int) ltrim($u['path'], '/') : 0;
+
+                $caPath = '/tmp/redis-ca.pem';
+                file_put_contents($caPath, $caPem);
+
+                $params = [
+                    'scheme'   => $isTls ? 'tls' : 'tcp',
+                    'host'     => $host,
+                    'port'     => (int)$port,
+                    'password' => $pass,
+                    'database' => $db,
+                ];
+
+                if ($isTls) {
+                    // Strenges TLS: CA verifizieren + Hostname prüfen
+                    $params['ssl'] = [
+                        'cafile'           => $caPath,
+                        'verify_peer'      => true,
+                        'verify_peer_name' => true,
+                        'peer_name'        => $host, // SNI/Hostname
+                    ];
+                }
             }
+
+            $this->redis = new Predis($params);
+            $this->lastStatus = (string) $this->redis->ping(); // "PONG"
+        } catch (\Throwable $e) {
+            $this->redis = null;
+            $this->lastStatus = 'error: ' . $e->getMessage();
         }
     }
 

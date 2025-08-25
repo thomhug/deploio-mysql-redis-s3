@@ -27,10 +27,7 @@ class Database
             if (str_starts_with($dsn, 'mysql:')) {
                 $caPath = \App\Util::env('DB_SSL_CA_PATH');
                 $caPem  = \App\Util::env('DB_SSL_CA_PEM');
-                $caB64  = \App\Util::env('DB_SSL_CA_B64');
-                if (!$caPem && $caB64) {
-                    $caPem = base64_decode($caB64, true) ?: null;
-                }
+
                 if (!$caPath && $caPem) {
                     $caPath = '/tmp/db-ca.pem';
                     file_put_contents($caPath, $caPem);
