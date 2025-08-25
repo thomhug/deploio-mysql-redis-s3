@@ -8,6 +8,9 @@ class Cache
     private ?Predis $redis = null;
     private ?string $lastStatus = null;
 
+    private ?bool $lastHit = null;
+    private ?string $lastKey = null;
+
     public function __construct()
     {
         $url = Util::env('REDIS_URL');
@@ -65,8 +68,10 @@ class Cache
 
     public function get(string $key): mixed
     {
-        if (!$this->redis) return null;
+        $this->lastKey = $key;
+        if (!$this->redis) { $this->lastHit = null; return null; }
         $val = $this->redis->get($key);
+        $this->lastHit = ($val !== null);
         return $val !== null ? json_decode($val, true) : null;
     }
 
@@ -81,4 +86,8 @@ class Cache
         if (!$this->redis) return;
         $this->redis->del([$key]);
     }
+
+    public function lastHit(): ?bool { return $this->lastHit; }
+    public function lastKey(): ?string { return $this->lastKey; }
+
 }
