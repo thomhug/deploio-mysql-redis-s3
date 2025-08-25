@@ -14,6 +14,12 @@ $messages = $db->messages; // Installations-/Schema-Meldungen sammeln
 $storage = new Storage();
 $cache = new Cache();
 
+if ($cache->enabled()) {
+    $messages[] = 'Redis verbunden (PING: ' . $cache->status() . ')';
+} else {
+    $messages[] = 'Redis nicht konfiguriert – Cache deaktiviert.';
+}
+
 // Einfacher MIME-Check
 function detect_mime(string $file): string
 {
