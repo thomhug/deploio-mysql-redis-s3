@@ -73,10 +73,10 @@ if (($_POST['action'] ?? '') === 'delete') {
 // Liste abrufen (mit Redis-Cache)
 $list = $cache->get('images:list');
 if ($list !== null) {
-    $messages[] = 'Cache HIT (images:list)';
+    $alerts[] = 'Cache HIT (images:list)';
     header('X-Cache-Images-List: HIT');
 } else {
-    $messages[] = 'Cache MISS (images:list) – frisch aus DB, 30s gecached.';
+    $alerts[] = 'Cache MISS (images:list) – frisch aus DB, 30s gecached.';
     header('X-Cache-Images-List: MISS');
     $list = $db->listImages();
     $cache->set('images:list', $list, 30);
