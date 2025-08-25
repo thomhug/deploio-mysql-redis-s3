@@ -14,11 +14,6 @@ class Database
     {
         [$dsn, $user, $pass] = $this->buildDsn();
 
-        // Debug-Ausgabe ins Error-Log
-        error_log("DSN: " . $dsn);
-        error_log("User: " . $user);
-        error_log("Pass: " . $pass);
-
         // Verbindungsversuch; bei "Datenbank existiert nicht" optional versuchen zu erstellen
         try {
 
