@@ -1,0 +1,5 @@
+---
+- name: BP_COMPOSER_INSTALL_OPTIONS
+  value: "--ignore-platform-reqs"
+- name: BP_PHP_WEB_DIR
+  value: public
