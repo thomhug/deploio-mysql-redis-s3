@@ -113,4 +113,11 @@ class Cache
         return $keys;
     }
 
+    // Cache.php ergänzen
+    public function ttl(string $key): ?int {
+        if (!$this->redis) return null;
+        $t = $this->redis->ttl($key);
+        return is_int($t) ? $t : null; // -2=kein Key, -1=ohne TTL
+    }
+
 }

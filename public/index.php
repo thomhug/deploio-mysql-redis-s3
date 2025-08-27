@@ -189,6 +189,11 @@ $csrf = Util::csrfToken();
           echo htmlspecialchars(json_encode($keys, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE));
           echo '</pre>';
 
+          echo '<h4>Redis TTL "images:list"</h4><pre>';
+          $ttl = $cache->ttl('images:list');
+          echo htmlspecialchars(var_export($ttl, true));
+          echo '</pre>';
+
           // Hilfsfunktion: pretty-print falls gültiges JSON
           function pretty_or_raw(?string $s): string {
               if ($s === null) return 'null';
