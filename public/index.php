@@ -189,9 +189,19 @@ $csrf = Util::csrfToken();
           echo htmlspecialchars(json_encode($keys, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE));
           echo '</pre>';
 
+          // Hilfsfunktion: pretty-print falls gültiges JSON
+          function pretty_or_raw(?string $s): string {
+              if ($s === null) return 'null';
+              $decoded = json_decode($s, true);
+              if (json_last_error() === JSON_ERROR_NONE) {
+                  return json_encode($decoded, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+              }
+              return $s; // kein JSON → roh ausgeben
+          }
+
           $raw = $cache->rawGetString('images:list'); // unverändert (JSON-String)
           echo '<h4>Redis "images:list" (raw)</h4><pre>';
-          echo htmlspecialchars($raw ?? 'null');
+          echo htmlspecialchars(pretty_or_raw($raw));
           echo '</pre>';
       } else {
           echo '<pre>Redis nicht konfiguriert – Cache deaktiviert.</pre>';
