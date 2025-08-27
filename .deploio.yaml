@@ -1,3 +1,6 @@
+env:
+- name: test
+  value: blub
 buildEnv:
 - name: BP_COMPOSER_INSTALL_OPTIONS
   value: "--ignore-platform-reqs"
