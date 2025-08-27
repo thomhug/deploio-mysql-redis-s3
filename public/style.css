@@ -15,3 +15,6 @@ button, input[type="submit"] { padding: .5rem .75rem; border-radius: .375rem; bo
 input[type="file"] { padding: .5rem; }
 label { font-weight: 600; }
 footer { margin-top: 2rem; color: #777; font-size: .9rem; }
+.raw { margin-top: 2rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.raw pre { max-height: 340px; overflow: auto; background: #f6f8fa; padding: 1rem; border-radius: .5rem; border: 1px solid #e2e8f0; }
+.raw h3, .raw h4 { margin: .5rem 0; }

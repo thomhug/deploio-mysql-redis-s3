@@ -90,4 +90,27 @@ class Cache
     public function lastHit(): ?bool { return $this->lastHit; }
     public function lastKey(): ?string { return $this->lastKey; }
 
+    public function rawGetString(string $key): ?string
+    {
+        if (!$this->redis) return null;
+        return $this->redis->get($key);
+    }
+
+    public function scan(string $pattern = '*', int $limit = 100): array
+    {
+        if (!$this->redis) return [];
+        $cursor = 0;
+        $keys = [];
+        do {
+            [$cursor, $chunk] = $this->redis->scan($cursor, 'MATCH', $pattern, 'COUNT', 50);
+            if (is_array($chunk)) {
+                foreach ($chunk as $k) {
+                    $keys[] = $k;
+                    if (count($keys) >= $limit) break 2;
+                }
+            }
+        } while ((int)$cursor !== 0 && count($keys) < $limit);
+        return $keys;
+    }
+
 }

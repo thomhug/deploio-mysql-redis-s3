@@ -161,6 +161,45 @@ $csrf = Util::csrfToken();
     <footer>
       <p>Speicher: Nine Object Storage (S3-kompatibel) • Register in DB • Cache via Redis • Presigned-Links (15 Min).</p>
     </footer>
+
+    <!-- RAW-Debug-Ausgabe -->
+    <section class="raw">
+      <h3>RAW: DB & Redis</h3>
+
+      <?php
+      // ---- DB: komplette images-Zeilen (limitiert) ----
+      try {
+          $rows = $db->pdo
+              ->query('SELECT * FROM images ORDER BY created_at DESC, id DESC LIMIT 200')
+              ->fetchAll(\PDO::FETCH_ASSOC);
+
+          echo '<h4>DB rows (images)</h4><pre>';
+          echo htmlspecialchars(json_encode($rows, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE));
+          echo '</pre>';
+      } catch (\Throwable $e) {
+          echo '<pre class="error">DB dump error: ' . htmlspecialchars($e->getMessage()) . '</pre>';
+      }
+
+      // ---- Redis: Status, Keys & Rohinhalt ----
+      if ($cache->enabled()) {
+          echo '<h4>Redis Status</h4><pre>' . htmlspecialchars($cache->status() ?? '') . '</pre>';
+
+          $keys = $cache->scan('images*', 50);
+          echo '<h4>Redis Keys (MATCH "images*" – max 50)</h4><pre>';
+          echo htmlspecialchars(json_encode($keys, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE));
+          echo '</pre>';
+
+          $raw = $cache->rawGetString('images:list'); // unverändert (JSON-String)
+          echo '<h4>Redis "images:list" (raw)</h4><pre>';
+          echo htmlspecialchars($raw ?? 'null');
+          echo '</pre>';
+      } else {
+          echo '<pre>Redis nicht konfiguriert – Cache deaktiviert.</pre>';
+      }
+      ?>
+    </section>
+
+
   </div>
 </body>
 </html>
