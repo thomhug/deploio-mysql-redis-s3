@@ -75,9 +75,29 @@ class Cache
         return $val !== null ? json_decode($val, true) : null;
     }
 
-    public function set(string $key, mixed $value, int $ttl = 60): void
+    public function set(string $key, mixed $value, int $ttl = 60, bool $stampItems = true): void
     {
         if (!$this->redis) return;
+
+        if ($stampItems) {
+            $now = (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))
+                ->format(\DateTimeInterface::ATOM); // z.B. 2025-08-27T13:07:00+00:00
+
+            // Falls Liste von Objekten → jedem Element cached_at hinzufügen
+            if (is_array($value)) {
+                // numerisch indiziert? (PHP ≥ 8.1)
+                if (\array_is_list($value)) {
+                    $value = array_map(
+                        fn($it) => is_array($it) ? ($it + ['cached_at' => $now]) : $it,
+                        $value
+                    );
+                } else {
+                    // einzelnes Objekt/Assoc-Array
+                    $value['cached_at'] = $now;
+                }
+            }
+        }
+
         $this->redis->setex($key, $ttl, json_encode($value));
     }
 
