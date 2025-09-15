@@ -116,7 +116,7 @@ class Database
             $charset = Util::env('DB_CHARSET', 'utf8mb4');
             $dsn = "mysql:host={$host};" . ($port ? "port={$port};" : '') . "charset={$charset}";
             $pdo = new PDO($dsn, $user, $pass, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-            //$pdo->exec("CREATE DATABASE IF NOT EXISTS `{$db}` CHARACTER SET {$charset} COLLATE {$charset}_general_ci");
+            $pdo->exec("CREATE DATABASE IF NOT EXISTS `{$db}` CHARACTER SET {$charset} COLLATE {$charset}_general_ci");
             return;
         }
         if (in_array($scheme, ['postgres', 'postgresql', 'pgsql'])) {
