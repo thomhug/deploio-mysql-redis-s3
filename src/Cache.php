@@ -133,7 +133,6 @@ class Cache
         return $keys;
     }
 
-    // Cache.php ergänzen
     public function ttl(string $key): ?int {
         if (!$this->redis) return null;
         $t = $this->redis->ttl($key);
